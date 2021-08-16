@@ -1,5 +1,6 @@
 import { Namespace, createNamespace } from 'continuation-local-storage';
 import cors from 'cors';
+import 'reflect-metadata';
 import express, {
   Application,
   NextFunction,
@@ -12,6 +13,7 @@ import morgan from 'morgan-body';
 
 import logger from '@middlewares/logger';
 import routes from './routes';
+import swaggerRoutes from './swagger.routes';
 
 class App {
   public readonly app: Application;
@@ -22,6 +24,7 @@ class App {
     this.app = express();
     this.session = createNamespace('request'); // é aqui que vamos armazenar o id da request
     this.middlewares();
+    this.configSwagger();
     this.routes();
     this.errorHandle();
   }
@@ -75,6 +78,11 @@ class App {
 
   private routes(): void {
     this.app.use('/faxinaja-api', routes);
+  }
+
+  private async configSwagger(): Promise<void> {
+    const swagger = await swaggerRoutes.load();
+    this.app.use(swagger);
   }
 }
 
