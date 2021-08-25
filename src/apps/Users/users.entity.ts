@@ -1,3 +1,4 @@
+import { ObjectId } from 'bson';
 import {
   BaseEntity,
   Column,
@@ -13,7 +14,7 @@ export class Users extends BaseEntity {
   @ObjectIdColumn({
     type: 'uuid',
   })
-  _id!: string;
+  _id!: ObjectId;
 
   @Column()
   name!: string;

@@ -1,7 +1,8 @@
-import { server } from '@config/index';
+import { server } from '@config/config';
 import connection from '@config/db';
 
 import logger from '@middlewares/logger';
+import 'reflect-metadata';
 
 connection.then(() => {
   logger.info(`Database connected`);

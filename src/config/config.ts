@@ -21,3 +21,14 @@ export const dbConnections = {
     conn: String(process.env.DATABASE_MONGO_CONN),
   },
 };
+
+export const auth = {
+  secret: String(process.env.SECRET),
+  expires: '1h',
+};
+
+export type IUserRequest = {
+  _id: string;
+  document: string;
+  name: string;
+};

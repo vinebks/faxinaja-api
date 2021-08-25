@@ -47,7 +47,7 @@
   "include": [
     "./src/**/*",
     ".vscode/@types"
-  ],
+   ],
   "exclude": [
     "node_modules",
     "dist",

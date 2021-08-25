@@ -19,7 +19,7 @@ export const findOne = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const response = await UserService.findOne(req.params.id);
+  const response = await UserService.findOne(req.user);
   return res.json(response);
 };
 
@@ -27,7 +27,7 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const response = await UserService.update(req.params.id, req.body.name);
+  const response = await UserService.update(req.user);
   return res.json(response);
 };
 
@@ -35,6 +35,6 @@ export const deleteOne = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const response = await UserService.delete(req.params.id);
+  const response = await UserService.delete(req.user);
   return res.json(response);
 };

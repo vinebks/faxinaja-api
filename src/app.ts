@@ -1,6 +1,5 @@
 import { Namespace, createNamespace } from 'continuation-local-storage';
 import cors from 'cors';
-import 'reflect-metadata';
 import express, {
   Application,
   NextFunction,
@@ -14,6 +13,7 @@ import morgan from 'morgan-body';
 import logger from '@middlewares/logger';
 import routes from './routes';
 import swaggerRoutes from './swagger.routes';
+import 'reflect-metadata';
 
 class App {
   public readonly app: Application;
