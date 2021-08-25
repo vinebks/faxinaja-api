@@ -7,7 +7,7 @@ import 'express-async-errors';
 
 const route = Router();
 
-route.post('/', authorize, validateUserPayload, controller.create);
+route.post('/', validateUserPayload, controller.create);
 route.get('/', authorize, controller.findAll);
 route.get('/:id', authorize, controller.findOne);
 route.put('/:id', authorize, controller.update);
