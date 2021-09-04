@@ -5,16 +5,16 @@ import { MongoRepository } from 'typeorm';
 import { connection } from '../../helper/getConnection';
 import { dbConnections, IUserRequest } from '@config/config';
 
-import { Users } from './users.entity';
+import { ClientUser } from './users.entity';
 
 class UserService {
-  private readonly repository: MongoRepository<Users>;
+  private readonly repository: MongoRepository<ClientUser>;
 
   constructor() {
-    this.repository = connection(Users, dbConnections.mongo.name);
+    this.repository = connection(ClientUser, dbConnections.mongo.name);
   }
 
-  async create(user: Users): Promise<Users> {
+  async create(user: ClientUser): Promise<ClientUser> {
     try {
       const response = await this.repository.save(user);
       return response;
@@ -29,7 +29,7 @@ class UserService {
     }
   }
 
-  async findAll(): Promise<Users[]> {
+  async findAll(): Promise<ClientUser[]> {
     const user = await this.repository.find();
     if (!user)
       throw new CustomError({
@@ -41,8 +41,8 @@ class UserService {
     return user;
   }
 
-  async findOne(userAuthenticated: IUserRequest): Promise<Users> {
-    const user = await this.repository.findOne(userAuthenticated._id);
+  async findOne(userAuthenticated: IUserRequest): Promise<ClientUser> {
+    const user = await this.repository.findOne(userAuthenticated.document);
     if (!user)
       throw new CustomError({
         code: 'USER_NOT_FOUND',
@@ -53,10 +53,10 @@ class UserService {
     return user;
   }
 
-  async update(userAuthenticated: IUserRequest): Promise<Users> {
+  async update(userAuthenticated: IUserRequest): Promise<ClientUser> {
     await this.repository.updateOne(
       {
-        _id: new ObjectId(userAuthenticated._id),
+        _id: new ObjectId(userAuthenticated.document),
       },
       {
         $set: {
@@ -68,10 +68,10 @@ class UserService {
     return this.findOne(userAuthenticated);
   }
 
-  async delete(userAuthenticated: IUserRequest): Promise<Users> {
+  async delete(userAuthenticated: IUserRequest): Promise<ClientUser> {
     const user = await this.findOne(userAuthenticated);
     await this.repository.deleteOne({
-      _id: new ObjectId(userAuthenticated._id),
+      _id: new ObjectId(userAuthenticated.document),
     });
     return user;
   }

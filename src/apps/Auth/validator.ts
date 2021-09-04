@@ -9,7 +9,7 @@ export const validateAuthPayload = async (
   await yup
     .object()
     .shape({
-      document: yup.string().length(11).required(),
+      email: yup.string().required(),
       password: yup.string().min(6).required(),
     })
     .validateSync(req.body, { abortEarly: false });

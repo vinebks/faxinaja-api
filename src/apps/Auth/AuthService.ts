@@ -1,4 +1,4 @@
-import { Users } from '@apps/Users/users.entity';
+import { ClientUser } from '@apps/Users/users.entity';
 import { auth, dbConnections } from '@config/config';
 import logger from '@middlewares/logger';
 import { CustomError } from 'express-handler-errors';
@@ -6,23 +6,23 @@ import { sign } from 'jsonwebtoken';
 import { getConnection, MongoRepository } from 'typeorm';
 
 class AuthService {
-  private readonly repository: MongoRepository<Users>;
+  private readonly repository: MongoRepository<ClientUser>;
 
   constructor() {
     this.repository = getConnection(
       dbConnections.mongo.name
-    ).getMongoRepository(Users);
+    ).getMongoRepository(ClientUser);
   }
 
   async auth(data: {
-    document: string;
+    email: string;
     password: string;
-  }): Promise<{ token: string }> {
+  }): Promise<{ token: string; name: string; email: string }> {
     try {
-      const { document, password } = data;
+      const { email, password } = data;
       logger.info(`AuthService::auth::`, data);
 
-      const userFounded = await this.repository.findOne({ document, password });
+      const userFounded = await this.repository.findOne({ email, password });
 
       if (!userFounded) {
         throw new CustomError({
@@ -35,7 +35,7 @@ class AuthService {
       const token = await sign(
         {
           _id: userFounded._id,
-          document: userFounded.document,
+          email: userFounded.email,
           name: userFounded.name,
         },
         auth.secret,
@@ -44,7 +44,7 @@ class AuthService {
         }
       );
 
-      return { token };
+      return { token: token, name: userFounded.name, email: userFounded.email };
     } catch (err) {
       if (err instanceof CustomError) throw err;
       logger.error(`AuthService::auth::${err.message}`);

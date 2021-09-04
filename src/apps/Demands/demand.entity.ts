@@ -4,30 +4,44 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   ObjectIdColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+export type Address = {
+  street: string;
+  number: number;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  region: string;
+};
+
 @Entity()
-export class ClientUser extends BaseEntity {
+export class Demands extends BaseEntity {
   @ObjectIdColumn({
     type: 'uuid',
   })
   _id!: ObjectId;
 
   @Column()
-  name!: string;
+  status!: string;
 
   @Column()
-  @Index({ unique: true })
-  document!: string;
+  clientId!: ObjectId;
 
   @Column()
-  password!: string;
+  professionalId!: ObjectId;
 
   @Column()
-  email!: string;
+  serviceType!: string;
+
+  @Column()
+  serviceValue!: number;
+
+  @Column()
+  address!: Address;
 
   @CreateDateColumn({
     type: 'timestamp',
