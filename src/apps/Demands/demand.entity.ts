@@ -29,10 +29,16 @@ export class Demands extends BaseEntity {
   status!: string;
 
   @Column()
-  clientId!: ObjectId;
+  serviceDate!: Date;
 
   @Column()
-  professionalId!: ObjectId;
+  extraServices!: [];
+
+  @Column()
+  clientId!: string;
+
+  @Column()
+  professionalId!: string;
 
   @Column()
   serviceType!: string;

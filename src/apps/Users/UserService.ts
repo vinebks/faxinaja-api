@@ -18,7 +18,7 @@ class UserService {
     try {
       const response = await this.repository.save(user);
       return response;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 11000)
         throw new CustomError({
           code: 'USER_ALREADY_EXISTS',

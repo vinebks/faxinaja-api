@@ -8,7 +8,7 @@ import 'express-async-errors';
 const route = Router();
 
 route.post('/create-user', validateUserPayload, controller.create);
-route.get('/list-users', authorize, controller.findAll);
+route.get('/list-users', controller.findAll);
 route.get('/find-user/:id', authorize, controller.findOne);
 route.put('/update-user/:id', authorize, controller.update);
 route.delete('/delete-user/:id', authorize, controller.deleteOne);

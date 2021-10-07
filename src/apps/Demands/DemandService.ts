@@ -1,9 +1,13 @@
 import { dbConnections } from '@config/config';
 import { connection } from '@helper/getConnection';
+import { ObjectId } from 'bson';
 import { CustomError } from 'express-handler-errors';
 import { MongoRepository } from 'typeorm';
 import { Demands } from './demand.entity';
 
+enum Services {
+  limpezaGeral = 120,
+}
 class DemandService {
   private readonly repository: MongoRepository<Demands>;
 
@@ -11,9 +15,20 @@ class DemandService {
     this.repository = connection(Demands, dbConnections.mongo.name);
   }
 
-  async createDemand(demandData: Demands): Promise<Demands> {
+  async createDemand(demandData: Demands, clientId: string): Promise<Demands> {
     try {
-      const response = this.repository.save(demandData);
+      const demand = {
+        status: 'aberto',
+        extraServices: demandData.extraServices ? demandData.extraServices : [],
+        clientId: clientId,
+        professionalId: '',
+        serviceDate: new Date(demandData.serviceDate),
+        serviceType: demandData.serviceType,
+        serviceValue: Services[demandData.serviceType],
+        address: demandData.address,
+      };
+
+      const response = this.repository.save(demand);
       return response;
     } catch (err: any) {
       if (err instanceof CustomError) throw err;
@@ -24,6 +39,16 @@ class DemandService {
         status: 500,
       });
     }
+  }
+
+  async listMyDemands(clientId: string): Promise<Demands[]> {
+    try {
+      const demandsList = await this.repository.find({ clientId: clientId });
+
+      return demandsList;
+    } catch (err: any) {}
+
+    return [];
   }
 }
 
