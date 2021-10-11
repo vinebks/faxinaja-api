@@ -7,6 +7,10 @@ import { dbConnections, IUserRequest } from '@config/config';
 
 import { ClientUser } from './users.entity';
 
+enum ClientType {
+  'p' = 'profissional',
+  'c' = 'cliente',
+}
 class UserService {
   private readonly repository: MongoRepository<ClientUser>;
 
@@ -16,6 +20,8 @@ class UserService {
 
   async create(user: ClientUser): Promise<ClientUser> {
     try {
+      user.userType = ClientType[user.userType];
+
       const response = await this.repository.save(user);
       return response;
     } catch (e: any) {

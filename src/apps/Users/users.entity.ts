@@ -9,6 +9,15 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export type Address = {
+  street: string;
+  number: number;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  region: string;
+};
 @Entity()
 export class ClientUser extends BaseEntity {
   @ObjectIdColumn({
@@ -18,6 +27,12 @@ export class ClientUser extends BaseEntity {
 
   @Column()
   name!: string;
+
+  @Column()
+  userType!: string;
+
+  @Column()
+  address!: Address;
 
   @Column()
   @Index({ unique: true })
