@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "NODE_ENV=dev ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
+    "start:devwin": "SET NODE_ENV=dev&&ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
     "coverage": "rimraf coverage && NODE_ENV=test jest --coverage --silent --detectOpenHandles --forceExit"
   },
   "devDependencies": {
@@ -19,6 +20,7 @@
     "@babel/preset-typescript": "^7.15.0",
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
+    "@types/bson": "^4.2.0",
     "@types/continuation-local-storage": "^3.2.3",
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",

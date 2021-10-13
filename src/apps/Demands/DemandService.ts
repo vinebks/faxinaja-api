@@ -50,6 +50,35 @@ class DemandService {
 
     return [];
   }
+
+  async deleteMyDemands(clientId: string): Promise<Demands[]> {
+    try {
+       await this.repository.delete({ clientId: clientId });
+
+    } catch (err: any) {}
+
+    return [];
+  }
+  async listOpenDemands(): Promise<Demands[]> {
+    try {
+      const demandsList = await this.repository.find({ professionalId: ""});
+
+      return demandsList;
+    } catch (err: any) {}
+
+    return [];
+  }
+
+  async assignDemandToProfessional(clientId: string, demandId: string): Promise<void> {
+    try {
+      console.log("clientId "+ clientId)
+      console.log("demandId "+ demandId)
+      const demandsList = await this.repository.findOneAndUpdate()
+      //return demandsList;
+    } catch (err: any) {}
+
+    //return [];
+  }
 }
 
 export default new DemandService();
