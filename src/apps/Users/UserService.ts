@@ -1,5 +1,5 @@
 import { CustomError } from 'express-handler-errors';
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'bson';
 import { MongoRepository } from 'typeorm';
 
 import { connection } from '../../helper/getConnection';
@@ -47,8 +47,8 @@ class UserService {
     return user;
   }
 
-  async findOne(userAuthenticated: IUserRequest): Promise<ClientUser> {
-    const user = await this.repository.findOne(userAuthenticated.document);
+  async findOne(id: string): Promise<ClientUser> {
+    const user = await this.repository.findOne({_id: ObjectId(id)});
     if (!user)
       throw new CustomError({
         code: 'USER_NOT_FOUND',

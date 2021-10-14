@@ -17,7 +17,7 @@ class AuthService {
   async auth(data: {
     email: string;
     password: string;
-  }): Promise<{ token: string; name: string; email: string; userType: string }> {
+  }): Promise<{ token: string; name: string; email: string; userType: string; document: string }> {
     try {
       const { email, password } = data;
       logger.info(`AuthService::auth::`, data);
@@ -38,6 +38,7 @@ class AuthService {
           email: userFounded.email,
           name: userFounded.name,
           userType: userFounded.userType,
+          document: userFounded.document
         },
         auth.secret,
         {
@@ -45,7 +46,7 @@ class AuthService {
         }
       );
 
-      return { token: token, name: userFounded.name, email: userFounded.email, userType: userFounded.userType };
+      return { token: token, name: userFounded.name, email: userFounded.email, userType: userFounded.userType, document: userFounded.document };
     } catch (err) {
       if (err instanceof CustomError) throw err;
       logger.error(`AuthService::auth::${err.message}`);
