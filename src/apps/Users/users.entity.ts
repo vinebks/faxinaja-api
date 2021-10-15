@@ -29,6 +29,15 @@ export class ClientUser extends BaseEntity {
   name!: string;
 
   @Column()
+  setor!: string;
+
+  @Column()
+  cargo!: string;
+
+  @Column()
+  contact!: string;
+
+  @Column()
   userType!: string;
 
   @Column()

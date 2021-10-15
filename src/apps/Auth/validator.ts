@@ -6,7 +6,7 @@ export const validateAuthPayload = async (
   _: Response,
   next: NextFunction
 ): Promise<void> => {
-  await yup
+  yup
     .object()
     .shape({
       email: yup.string().required(),

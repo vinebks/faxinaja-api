@@ -17,7 +17,7 @@ class AuthService {
   async auth(data: {
     email: string;
     password: string;
-  }): Promise<{ token: string; name: string; email: string }> {
+  }): Promise<{ token: string; cliente: ClientUser }> {
     try {
       const { email, password } = data;
       logger.info(`AuthService::auth::`, data);
@@ -44,8 +44,8 @@ class AuthService {
         }
       );
 
-      return { token: token, name: userFounded.name, email: userFounded.email };
-    } catch (err) {
+      return { token: token, cliente: userFounded };
+    } catch (err: any) {
       if (err instanceof CustomError) throw err;
       logger.error(`AuthService::auth::${err.message}`);
 
