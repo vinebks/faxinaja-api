@@ -35,6 +35,9 @@ export class ClientUser extends BaseEntity {
   cargo!: string;
 
   @Column()
+  balance!: number;
+
+  @Column()
   contact!: string;
 
   @Column()

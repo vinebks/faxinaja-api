@@ -1,11 +1,12 @@
 import { CustomError } from 'express-handler-errors';
-import { ObjectId } from 'mongodb';
+import { ObjectID, ObjectId } from 'bson';
 import { MongoRepository } from 'typeorm';
 
 import { connection } from '../../helper/getConnection';
 import { dbConnections, IUserRequest } from '@config/config';
 
 import { AmUsers } from './AmUsers.entity';
+import { ClientUser } from '../Users/users.entity';
 
 enum ClientType {
   'p' = 'profissional',
@@ -14,9 +15,11 @@ enum ClientType {
 
 class AmUserService {
   private readonly repository: MongoRepository<AmUsers>;
+  private readonly ClientRepository: MongoRepository<ClientUser>;
 
   constructor() {
     this.repository = connection(AmUsers, dbConnections.mongo.name);
+    this.ClientRepository = connection(ClientUser, dbConnections.mongo.name);
   }
 
   async create(user: AmUsers): Promise<AmUsers> {
@@ -65,20 +68,105 @@ class AmUserService {
     return user;
   }
 
-  // async update(userAuthenticated: IUserRequest): Promise<ClientUser> {
-  //   await this.repository.updateOne(
-  //     {
-  //       _id: new ObjectId(userAuthenticated.document),
-  //     },
-  //     {
-  //       $set: {
-  //         name: userAuthenticated.name,
-  //       },
-  //     }
-  //   );
+  async updateSalary(
+    userId: string,
+    newSalary: number,
+    document: string
+  ): Promise<any> {
+    const findGestor = await this.ClientRepository.findOne({
+      document: document,
+    });
 
-  //   return this.findOne(userAuthenticated);
-  // }
+    if (!findGestor) {
+      throw new CustomError({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuário Gestor não encontrado',
+        status: 404,
+      });
+    }
+
+    const newBudget = findGestor.balance - newSalary;
+
+    const findEmployee = await this.repository.findOne({ userId: userId });
+
+    if (!findEmployee) {
+      throw new CustomError({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuário Employee não encontrado',
+        status: 404,
+      });
+    }
+
+    const newAmount = findEmployee.Salary + newSalary;
+
+    this.ClientRepository.findOneAndUpdate(
+      { _id: findGestor._id },
+      { $set: { balance: newBudget } }
+    );
+
+    const user = await this.repository.findOneAndUpdate(
+      { userId: findEmployee.userId },
+      { $set: { Salary: newAmount } }
+    );
+    if (!user)
+      throw new CustomError({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuário não encontrado',
+        status: 404,
+      });
+
+    return user;
+  }
+
+  async createComment(userId: string, newComment: string): Promise<any> {
+    // const userExists = await this.repository.findOne({ userId: userId });
+
+    // if (!userExists)
+    //   throw new CustomError({
+    //     code: 'USER_NOT_FOUND',
+    //     message: 'Usuário não encontrado',
+    //     status: 404,
+    //   });
+
+    const user = await this.repository.findOneAndUpdate(
+      { userId: userId },
+      { $push: { comments: newComment } }
+    );
+    if (!user)
+      throw new CustomError({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuário não encontrado',
+        status: 404,
+      });
+
+    return user;
+  }
+
+  async updateAllSalarysToNumber(): Promise<any> {
+    const users = await this.repository.find();
+
+    users.map(async (user) => {
+      await this.repository.findOneAndUpdate(
+        { userId: user.userId },
+        { $set: { Salary: Number(user.Salary) } }
+      );
+    });
+
+    return 'Ok';
+  }
+
+  async getBalance(document: string): Promise<number> {
+    const gestor = await this.ClientRepository.findOne({ document: document });
+
+    if (!gestor)
+      throw new CustomError({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuário não encontrado',
+        status: 404,
+      });
+
+    return gestor.balance;
+  }
 }
 
 export default new AmUserService();

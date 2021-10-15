@@ -18,6 +18,9 @@ export class AmUsers extends BaseEntity {
   Salary!: string;
 
   @Column()
+  comments!: string[];
+
+  @Column()
   Pais!: string;
 
   @Column()
