@@ -59,6 +59,7 @@ class DemandService {
 
     return [];
   }
+
   async listOpenDemands(): Promise<Demands[]> {
     try {
       const demandsList = await this.repository.find({ professionalId: ""});
@@ -73,9 +74,48 @@ class DemandService {
     try {
       console.log("clientId "+ clientId)
       console.log("demandId "+ demandId)
-      const demandsList = await this.repository.findOneAndUpdate()
-      //return demandsList;
-    } catch (err: any) {}
+      const ret = await this.repository
+                            .findOneAndUpdate({_id:ObjectId(demandId)}, 
+                                              {$set:
+                                                {professionalId: clientId, 
+                                                status: "agendado"}
+                                              });
+      console.log(ret);
+    } catch (err: any) {
+      console.error(err)
+    }
+
+    //return [];
+  }
+
+  async findMyMadeDemands(professionalId: string): Promise<Demands[]> {
+    try {
+      console.log(professionalId)
+      const demandsList = await this.repository
+                            .find({ professionalId: professionalId});
+                                                                      
+      console.log("Ret "+ demandsList)
+      return demandsList;
+    } catch (err: any) {
+      console.error(err)
+    }
+
+    return [];
+  }
+
+  async finishOrder(clientId: string, demandId: string): Promise<void> {
+    try {
+      console.log("clientId "+ clientId)
+      console.log("demandId "+ demandId)
+      const ret = await this.repository
+                            .findOneAndUpdate({_id:ObjectId(demandId)}, 
+                                              {$set:
+                                                {status: "finalizado"}
+                                              });
+      console.log(ret);
+    } catch (err: any) {
+      console.error(err)
+    }
 
     //return [];
   }

@@ -10,6 +10,9 @@ route.post('/create-demand', authorize, controller.createDemand);
 route.get('/find-my-demands', authorize, controller.findMyDemands);
 route.get('/delete-my-demands', authorize, controller.deleteDemands);
 route.get('/find-open-demands', authorize, controller.findOpenDemands);
-route.get('/assign-demand/:demandId', authorize, controller.assignDemandToProfessional);
+route.post('/assign-demand/:demandId', authorize, controller.assignDemandToProfessional);
+route.get('/find-my-made-demands', authorize, controller.findMyMadeDemands);
+route.post('/finish-demand/:demandId', authorize, controller.finishOrder);
+
 
 export default route;
