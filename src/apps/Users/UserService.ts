@@ -59,19 +59,15 @@ class UserService {
     return user;
   }
 
-  async update(userAuthenticated: IUserRequest): Promise<ClientUser> {
-    await this.repository.updateOne(
-      {
-        _id: new ObjectId(userAuthenticated.document),
-      },
-      {
-        $set: {
-          name: userAuthenticated.name,
-        },
-      }
-    );
+  async update(userAuthenticated: IUserRequest, user: ClientUser): Promise<void> {
+   
+     var userModified = await this.repository.updateOne({
+      _id: new ObjectId(userAuthenticated._id),
+    },
+    {$set:user}, );
 
-    return this.findOne(userAuthenticated);
+    console.log(userModified)
+    //return userModified;
   }
 
   async delete(userAuthenticated: IUserRequest): Promise<ClientUser> {

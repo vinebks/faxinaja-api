@@ -28,7 +28,7 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const response = await UserService.update(req.user);
+  const response = await UserService.update(req.user, req.body);
   return res.json(response);
 };
 
