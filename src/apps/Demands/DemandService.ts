@@ -49,9 +49,15 @@ class DemandService {
 
   async listMyDemands(clientId: string): Promise<Demands[]> {
     try {
-      const demandsList = await this.repository.find({ clientId: clientId });
+      const demandsList = await this.repository.find({
+        clientId: clientId,
+      });
 
-      return demandsList;
+      const listaOrdenada = demandsList.sort((a, b) => {
+        return a.serviceDate > b.serviceDate ? -1 : 1;
+      });
+
+      return listaOrdenada;
     } catch (err: any) {}
 
     return [];
