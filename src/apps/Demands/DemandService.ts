@@ -8,6 +8,9 @@ import { Demands } from './demand.entity';
 
 enum Services {
   limpezaGeral = 120,
+  limpezaSimples = 80,
+  limpezaPequena = 100,
+  areaExterna = 100,
 }
 class DemandService {
   private readonly repository: MongoRepository<Demands>;
