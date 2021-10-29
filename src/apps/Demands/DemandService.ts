@@ -1,3 +1,4 @@
+import { ClientUser } from '@apps/Users/users.entity';
 import { dbConnections } from '@config/config';
 import { connection } from '@helper/getConnection';
 import { ObjectId } from 'bson';
@@ -10,9 +11,11 @@ enum Services {
 }
 class DemandService {
   private readonly repository: MongoRepository<Demands>;
+  private readonly userRepository: MongoRepository<ClientUser>;
 
   constructor() {
     this.repository = connection(Demands, dbConnections.mongo.name);
+    this.userRepository = connection(ClientUser, dbConnections.mongo.name);
   }
 
   async createDemand(demandData: Demands, clientId: string): Promise<Demands> {
@@ -53,16 +56,29 @@ class DemandService {
 
   async deleteMyDemands(clientId: string): Promise<Demands[]> {
     try {
-       await this.repository.delete({ clientId: clientId });
-
+      await this.repository.delete({ clientId: clientId });
     } catch (err: any) {}
 
     return [];
   }
 
-  async listOpenDemands(): Promise<Demands[]> {
+  async listOpenDemands(_id: string): Promise<Demands[]> {
     try {
-      const demandsList = await this.repository.find({ professionalId: ""});
+      const professionalInfos = await this.userRepository.findOne(_id);
+
+      if (!professionalInfos) {
+        throw new CustomError({
+          code: 'USER_NOT_FOUND',
+          message: 'Nao foi possivel encontrar o usuario',
+          status: 404,
+        });
+      }
+
+      const demandsList = await this.repository.find({
+        professionalId: '',
+        status: 'aberto',
+        'address.city': { $eq: professionalInfos.address.city },
+      });
 
       return demandsList;
     } catch (err: any) {}
@@ -70,19 +86,20 @@ class DemandService {
     return [];
   }
 
-  async assignDemandToProfessional(clientId: string, demandId: string): Promise<void> {
+  async assignDemandToProfessional(
+    clientId: string,
+    demandId: string
+  ): Promise<void> {
     try {
-      console.log("clientId "+ clientId)
-      console.log("demandId "+ demandId)
-      const ret = await this.repository
-                            .findOneAndUpdate({_id:ObjectId(demandId)}, 
-                                              {$set:
-                                                {professionalId: clientId, 
-                                                status: "agendado"}
-                                              });
+      console.log('clientId ' + clientId);
+      console.log('demandId ' + demandId);
+      const ret = await this.repository.findOneAndUpdate(
+        { _id: ObjectId(demandId) },
+        { $set: { professionalId: clientId, status: 'agendado' } }
+      );
       console.log(ret);
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
     }
 
     //return [];
@@ -90,14 +107,15 @@ class DemandService {
 
   async findMyMadeDemands(professionalId: string): Promise<Demands[]> {
     try {
-      console.log(professionalId)
-      const demandsList = await this.repository
-                            .find({ professionalId: professionalId});
-                                                                      
-      console.log("Ret "+ demandsList)
+      console.log(professionalId);
+      const demandsList = await this.repository.find({
+        professionalId: professionalId,
+      });
+
+      console.log('Ret ' + demandsList);
       return demandsList;
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
     }
 
     return [];
@@ -105,16 +123,15 @@ class DemandService {
 
   async finishOrder(clientId: string, demandId: string): Promise<void> {
     try {
-      console.log("clientId "+ clientId)
-      console.log("demandId "+ demandId)
-      const ret = await this.repository
-                            .findOneAndUpdate({_id:ObjectId(demandId)}, 
-                                              {$set:
-                                                {status: "finalizado"}
-                                              });
+      console.log('clientId ' + clientId);
+      console.log('demandId ' + demandId);
+      const ret = await this.repository.findOneAndUpdate(
+        { _id: ObjectId(demandId) },
+        { $set: { status: 'finalizado' } }
+      );
       console.log(ret);
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
     }
 
     //return [];

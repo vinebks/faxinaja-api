@@ -48,7 +48,7 @@ class UserService {
   }
 
   async findOne(id: string): Promise<ClientUser> {
-    const user = await this.repository.findOne({_id: ObjectId(id)});
+    const user = await this.repository.findOne({ _id: ObjectId(id) });
     if (!user)
       throw new CustomError({
         code: 'USER_NOT_FOUND',
@@ -59,14 +59,20 @@ class UserService {
     return user;
   }
 
-  async update(userAuthenticated: IUserRequest, user: ClientUser): Promise<void> {
-   
-     var userModified = await this.repository.updateOne({
-      _id: new ObjectId(userAuthenticated._id),
-    },
-    {$set:user}, );
+  async update(
+    userAuthenticated: IUserRequest,
+    user: ClientUser
+  ): Promise<void> {
+    user.userType = ClientType[user.userType];
 
-    console.log(userModified)
+    var userModified = await this.repository.updateOne(
+      {
+        _id: new ObjectId(userAuthenticated._id),
+      },
+      { $set: user }
+    );
+
+    console.log(userModified);
     //return userModified;
   }
 
